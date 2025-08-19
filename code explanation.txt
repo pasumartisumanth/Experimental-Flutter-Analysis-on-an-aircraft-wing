@@ -1,0 +1,47 @@
+clc
+clear
+close all
+%% READING ACCELEROMETER DATA and defining Variables
+                        % LEADING EDGE %																  % LEADING EDGE %
+data   = xlsread('LE_500rpm.csv');																		% Importing accelerometer data
+LE_time   = data(:,1);																					% Assigning variables - time
+LE_X_acc  = data(:,2);																					% Assigning variables - X acceleration
+LE_Y_acc  = data(:,3);																					% Assigning variables - Y acceleration		
+LE_Z_acc  = data(:,4);																					% Assigning variables - Z acceleration
+								
+%%  FFT %%								
+								
+N      = numel(LE_time);																				% Number of time steps 						
+Ts     = abs(diff(LE_time(1:2)));																		% time interval per time step which is sampling time period	
+fs     = 1/Ts;																							% Converting sampling time period to sampling frequency
+f_axis = [0:N-1]*fs/N;																					% fs returns number of interval not frequency value, so here we convert fs to frequency value using DFT(Discrete Fourier Transform) relations
+A_freq_LE = fft(LE_Z_acc);																				% Converting acceleration values from time domain to frequency domain using fast fourier transform
+								
+figure(1)								
+hold on																									% hold on is used to plot multiple curves in same graph
+plot(f_axis,abs(A_freq_LE),'-r','LineWidth',0.5)														% plotting frequency vs acceleration graph for LE
+grid on 								
+grid minor								
+                        % TRAILING EDGE %																  % LEADING EDGE %
+data   = xlsread('TE_500rpm.csv');								                                        % Importing accelerometer data
+TE_time   = data(:,1);								                                                    % Assigning variables - time
+TE_X_acc  = data(:,2);								                                                    % Assigning variables - X acceleration
+TE_Y_acc  = data(:,3);								                                                    % Assigning variables - Y acceleration		
+TE_Z_acc  = data(:,4);								                                                    % Assigning variables - Z acceleration
+								                                                                        
+%%   FFT  %%								                                                            
+N      = numel(TE_time);								                                                
+Ts     = abs(diff(TE_time(1:2)));								                                        % Number of time steps 						
+fs     = 1/Ts;								                                                            % time interval per time step which is sampling time period	
+f_axis = [0:N-1]*fs/N;								                                                    % Converting sampling time period to sampling frequency
+A_freq_TE = fft(TE_Z_acc);								                                                % fs returns number of interval not frequency value, so here we convert fs to frequency value using DFT(Discrete Fourier Transform) relations
+								                                                                        % Converting acceleration values from time domain to frequency domain using fast fourier transform
+figure(1)								                                                                
+plot(f_axis,abs(A_freq_TE),'-b','LineWidth',0.5)								                        % plotting frequency vs acceleration graph for TE
+grid on                                                                                                 
+grid minor                                                                                              
+ylabel('Acceleration amplitude (m/s^2)','FontSize',14,'FontWeight','normal')							% Giving axis labels
+xlabel('Frequency (Hz)','FontSize',14,'FontWeight','normal')											% Giving axis labels
+ylim([0 20])																							% Giving limit values for Y axis
+legend ('Leading Edge','Trailing Edge','FontSize',12,'FontWeight','normal')								% Assigning legend to plot for LE and TE curves 
+title('Acceleration vs Frequency - NACA 24015 at 0 \circ AOA','FontSize',16,'FontWeight','normal')		% Giving title to graph
